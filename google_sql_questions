@@ -1,0 +1,75 @@
+How can you select all the even number records from a table?
+All the odd number records? *
+    modulus operator. WHERE order_qty % 2 = 0, WHERE order_qty % 2 != 0
+
+It's the end of 2017, and the owner of a confectionary wants to write an SQL query
+ that finds the COUNT of orders placed in 2017 by customer e-mail address.
+She wants to ORDER the results by the COUNT of orders placed in 2016, descending,
+so that she can personally send thank-you e-mails to her top customers by order volume.
+Can you write a query that will help this owner find the COUNT of all orders placed in 2017,
+ by customer e-mail address, sorted descending? *
+
+* This solution assumes the Orders table includes
+ a column for an email address attached to each order entry,
+ and includes a date column.
+
+SELECT o.email, COUNT(*) order_count
+FROM orders o
+WHERE o.occurred_at BETWEEN '2017-01-01' AND '2018-01-01'
+GROUP BY o.email
+ORDER BY order_count DESC;
+
+* This solution assumes database has an Orders table
+( that includes a date column entry for each order row),
+however with the email address stored in a separate accounts table,
+being linked through a.account_id(Primary key), o.account_id(foreign key).
+In this solution each account has a single email address.
+
+SELECT accounts.email, COUNT(orders.*) order_count
+FROM orders
+JOIN accounts
+ON orders.account_id = accounts.id
+WHERE orders.occurred_at BETWEEN '2017-01-01' AND '2018-01-01'
+GROUP BY accounts.email
+ORDER BY order_count DESC;
+
+You have IDs on 2 tables, you want the IDs which are in the first table, but not in the second one.
+ Answer with both JOIN and SubQuery. Do a left join where b.ID is null ( here b is the second table)
+
+ *This solution returns all a.ID's that do not exist in b.ID( showing all NULL values in b_ID column, for visual comparison)
+
+ SELECT a.ID a_ID, b.ID b_id
+ FROM a
+ LEFT b
+ ON a.ID = b.ID
+ WHERE b.ID IS NULL;
+
+ *Same result as above, only showing a.ID values in a single column.
+
+ SELECT a.ID
+ FROM a
+ LEFT b
+ ON a.ID = b.ID
+ WHERE b.ID IS NULL;
+
+ b. Select ID from a where id not in (select id from b)
+
+ * Selecting a.ID using where NOT IN a select from b
+SELECT a.ID  aID_only
+FROM a.ID
+WHERE a.ID NOT IN
+(SELECT b.ID
+  FROM B);
+
+  You have a table with salaries of employees,
+  how will you get the 10th highest salary (keep in mind that multiple employees might have the same salaries)
+  a. Select top 1 salary from (select distinct top 10 salary from emp order by salary desc) x order by salary
+
+  SELECT top_ten_salary.*
+  FROM (
+    SELECT DISTINCT salary_total_usd as salary_amount
+    FROM emp
+    ORDER BY salary_total_usd DESC
+    LIMIT 10 ) top_ten_salary
+ORDER BY top_ten_salary DESC
+LIMIT 1
